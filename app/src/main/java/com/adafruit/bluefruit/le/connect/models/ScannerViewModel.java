@@ -20,6 +20,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.adafruit.bluefruit.le.connect.ConfigureActivity;
 import com.adafruit.bluefruit.le.connect.R;
 import com.adafruit.bluefruit.le.connect.ble.central.BlePeripheral;
 import com.adafruit.bluefruit.le.connect.ble.central.BleScanner;
@@ -622,6 +623,8 @@ public class ScannerViewModel extends AndroidViewModel implements BleScanner.Ble
                             if (status == BluetoothGatt.GATT_SUCCESS) {
                                 // Discovery finished
                                 mBlePeripheralDiscoveredServices.setValue(blePeripheral);
+                                Intent intent2 = new Intent(context, ConfigureActivity.class);
+                                context.startActivity(intent2);
 
                             } else {
                                 final String message = LocalizationManager.getInstance().getString(getApplication(), "peripheraldetails_errordiscoveringservices");

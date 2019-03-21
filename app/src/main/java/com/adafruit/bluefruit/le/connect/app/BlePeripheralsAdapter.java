@@ -8,6 +8,7 @@ import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -332,6 +333,7 @@ class BlePeripheralsAdapter extends RecyclerView.Adapter<BlePeripheralsAdapter.V
             BlePeripheral selectedBlePeripheral = weakBlePeripheral.get();
             if (selectedBlePeripheral != null) {
                 if (connectionState == BlePeripheral.STATE_DISCONNECTED) {
+                    Log.v("BlePeripheralsAdapter","Connecting peripheral");
                     selectedBlePeripheral.connect(mContext);
                 } else {
                     selectedBlePeripheral.disconnect();

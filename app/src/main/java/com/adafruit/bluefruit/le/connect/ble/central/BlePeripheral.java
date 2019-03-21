@@ -17,6 +17,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.adafruit.bluefruit.le.connect.BuildConfig;
+import com.adafruit.bluefruit.le.connect.ConfigureActivity;
 import com.adafruit.bluefruit.le.connect.ble.BleUtils;
 
 import java.util.ArrayList;
@@ -71,7 +72,6 @@ public class BlePeripheral {
 
     private int mRssi = 0;
 
-
     // region BluetoothGattCallback
     private BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         /*
@@ -93,6 +93,8 @@ public class BlePeripheral {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mConnectionState = STATE_CONNECTED;
                 localBroadcastUpdate(kBlePeripheral_OnConnected, getIdentifier());
+                Log.d(TAG,"Connected!");
+
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Log.d(TAG, "onConnectionStateChange STATE_DISCONNECTED");
                 notifyConnectionFinished(false);
@@ -154,11 +156,24 @@ public class BlePeripheral {
             }
         }
 
+        public String hexToString(String hex) {
+            StringBuilder sb = new StringBuilder();
+            char[] hexData = hex.toCharArray();
+            for (int count = 0; count < hexData.length - 1; count += 2) {
+                int firstDigit = Character.digit(hexData[count], 16);
+                int lastDigit = Character.digit(hexData[count + 1], 16);
+                int decimal = firstDigit * 16 + lastDigit;
+                sb.append((char)decimal);
+            }
+            return sb.toString();
+        }
+
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
 
             Log.d(TAG, "onCharacteristicChanged. numCaptureReadHandlers: " + mCaptureReadHandlers.size());
+            Log.d(TAG,"characteristic value: " + hexToString(BleUtils.bytesToHex2(characteristic.getValue())));
 
             final String identifier = getCharacteristicIdentifier(characteristic);
             final int status = BluetoothGatt.GATT_SUCCESS;          // On Android, there is no error reported for this callback, so we assume it is SUCCESS
