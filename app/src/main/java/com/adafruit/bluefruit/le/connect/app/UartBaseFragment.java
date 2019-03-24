@@ -71,6 +71,7 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
     private final static String kPreferences_timestampDisplayMode = "timestampdisplaymode";
 
     // UI
+    private TextView mainTextView;
     private EditText mBufferTextView;
     private RecyclerView mBufferRecylerView;
     protected TimestampItemAdapter mBufferItemAdapter;
@@ -135,6 +136,8 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
 
         // Buffer recycler view
         if (context != null) {
+            mainTextView = view.findViewById(R.id.uartMainTextView);
+            mainTextView.setText("Click the button to configure Oropharangel!");
             mBufferRecylerView = view.findViewById(R.id.bufferRecyclerView);
             DividerItemDecoration itemDecoration = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
             Drawable lineSeparatorDrawable = ContextCompat.getDrawable(context, R.drawable.simpledivideritemdecoration);
@@ -482,7 +485,8 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
             // Add newline character if checked
             newText += getEolCharacters();
         }
-
+        mainTextView.setText("Breathing is normal. All is well!");
+        newText = "configure";
         send(newText);
     }
 
@@ -506,6 +510,12 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
         spanBuffer.setSpan(new ForegroundColorSpan(color), from, from + text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         if (isBold) {
             spanBuffer.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), from, from + text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        if (text.equalsIgnoreCase("alert")){
+            mainTextView.setText("ALERT! Breathing has stopped!");
+        } else if (text.equalsIgnoreCase("allClear")) {
+            mainTextView.setText("Breathing is normal. All is well!");
         }
     }
 

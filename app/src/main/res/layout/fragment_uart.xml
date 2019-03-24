@@ -75,14 +75,23 @@
         android:background="@color/white"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/uartMainTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Text here"/>
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/bufferRecyclerView"
+            android:visibility="invisible"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1" />
 
         <EditText
             android:id="@+id/bufferTextView"
+            android:visibility="invisible"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
