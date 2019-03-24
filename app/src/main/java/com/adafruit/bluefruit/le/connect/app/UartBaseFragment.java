@@ -4,12 +4,16 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -57,6 +61,8 @@ import java.util.Locale;
 public abstract class UartBaseFragment extends ConnectedPeripheralFragment implements UartPacketManagerBase.Listener, MqttManager.MqttManagerListener {
     // Log
     private final static String TAG = UartBaseFragment.class.getSimpleName();
+
+    Vibrator vibrator;
 
     // Configuration
     public final static int kDefaultMaxPacketsToPaintAsText = 500;
@@ -133,11 +139,12 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
         super.onViewCreated(view, savedInstanceState);
 
         final Context context = getContext();
+        vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 
         // Buffer recycler view
         if (context != null) {
             mainTextView = view.findViewById(R.id.uartMainTextView);
-            mainTextView.setText("Click the button to configure Oropharangel!");
+            mainTextView.setText("Click the button to configure OropharAngel!");
             mBufferRecylerView = view.findViewById(R.id.bufferRecyclerView);
             DividerItemDecoration itemDecoration = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
             Drawable lineSeparatorDrawable = ContextCompat.getDrawable(context, R.drawable.simpledivideritemdecoration);
@@ -201,9 +208,9 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
             mIsEolEnabled = preferences.getBoolean(kPreferences_eol, true);
             mEolCharactersId = preferences.getInt(kPreferences_eolCharactersId, 0);
             FragmentActivity activity = getActivity();
-            if (activity != null) {
-                activity.invalidateOptionsMenu();        // update options menu with current values
-            }
+//            if (activity != null) {
+//                activity.invalidateOptionsMenu();        // update options menu with current values
+//            }
 
             // Mqtt init
             if (mMqttManager == null) {
@@ -291,7 +298,7 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
 
         super.onDestroy();
     }
-
+/*
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -468,7 +475,7 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
             }
         }
     }
-
+*/
     // endregion
 
     // region Uart
@@ -477,6 +484,7 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
     protected abstract void send(String message);
 
     private void onClickSend() {
+        /*
         String newText = mSendEditText.getText().toString();
         mSendEditText.setText("");       // Clear editText
 
@@ -485,8 +493,11 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
             // Add newline character if checked
             newText += getEolCharacters();
         }
+        */
         mainTextView.setText("Breathing is normal. All is well!");
-        newText = "configure";
+        mainTextView.setTextColor(Color.GREEN);
+        String newText = "configure";
+        mSendButton.setEnabled(false);
         send(newText);
     }
 
@@ -503,19 +514,26 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void addTextToSpanBuffer(SpannableStringBuilder spanBuffer, String text, int color, boolean isBold) {
         Log.v(TAG,"addTextToSpanBuffer: " + text);
-        final int from = spanBuffer.length();
-        spanBuffer.append(text);
-        spanBuffer.setSpan(new ForegroundColorSpan(color), from, from + text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        if (isBold) {
-            spanBuffer.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), from, from + text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
+//        final int from = spanBuffer.length();
+//        spanBuffer.append(text);
+//        spanBuffer.setSpan(new ForegroundColorSpan(color), from, from + text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//        if (isBold) {
+//            spanBuffer.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), from, from + text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//        }
 
         if (text.equalsIgnoreCase("alert")){
             mainTextView.setText("ALERT! Breathing has stopped!");
+            mainTextView.setTextColor(Color.RED);
+            long[] mVibratePattern = new long[]{0,500, 500};
+            vibrator.vibrate(mVibratePattern,1);
         } else if (text.equalsIgnoreCase("allClear")) {
             mainTextView.setText("Breathing is normal. All is well!");
+            mainTextView.setTextColor(Color.GREEN);
+            vibrator.cancel();
+
         }
     }
 
