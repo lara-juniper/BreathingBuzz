@@ -345,6 +345,7 @@ class BlePeripheralsAdapter extends RecyclerView.Adapter<BlePeripheralsAdapter.V
         // Expanded view
         Spanned text = getAdvertisementDescription(mContext, blePeripheral);
         holder.dataTextView.setText(text);
+        //Log.d(TAG,"dataTextView: " + text);
 
         holder.rawDataButton.setOnClickListener(v -> mListener.onAdvertisementData(blePeripheral));
     }

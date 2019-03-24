@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.adafruit.bluefruit.le.connect.ble.central.BlePeripheral;
 import com.adafruit.bluefruit.le.connect.utils.LocalizationManager;
@@ -66,6 +67,7 @@ public class UartPeripheralService extends PeripheralService {
     }
 
     public void setTx(byte[] data) {
+        Log.v("UARTPeripheralService","set Tx: " + data);
         mTxCharacteristic.setValue(data);
 
         UartRXListener rxListener = mWeakRxListener.get();
@@ -79,6 +81,7 @@ public class UartPeripheralService extends PeripheralService {
     }
 
     public void setRx(byte[] data) {
+        Log.v("UARTPeripheralService","set RX: " + data);
         mRxCharacteristic.setValue(data);
 
         if (mListener != null) {

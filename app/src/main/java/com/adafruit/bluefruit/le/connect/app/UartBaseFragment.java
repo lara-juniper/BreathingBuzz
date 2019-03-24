@@ -23,6 +23,7 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -499,6 +500,7 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
     }
 
     private void addTextToSpanBuffer(SpannableStringBuilder spanBuffer, String text, int color, boolean isBold) {
+        Log.v(TAG,"addTextToSpanBuffer: " + text);
         final int from = spanBuffer.length();
         spanBuffer.append(text);
         spanBuffer.setSpan(new ForegroundColorSpan(color), from, from + text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -510,6 +512,9 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
     @MainThread
     private void updateBytesUI() {
         if (mUartData != null) {
+            String sentText = String.format(getString(R.string.uart_sentbytes_format), mUartData.getSentBytes());
+            String receivedText = String.format(getString(R.string.uart_receivedbytes_format), mUartData.getReceivedBytes());
+            //Log.v("BLE_TX_RX","sent: " + sentText + ", received: " + receivedText);
             mSentBytesTextView.setText(String.format(getString(R.string.uart_sentbytes_format), mUartData.getSentBytes()));
             mReceivedBytesTextView.setText(String.format(getString(R.string.uart_receivedbytes_format), mUartData.getReceivedBytes()));
         }
@@ -643,6 +648,7 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
             final byte[] bytes = packet.getData();
             final String formattedData = mShowDataInHexFormat ? BleUtils.bytesToHex2(bytes) : BleUtils.bytesToText(bytes, true);
             addTextToSpanBuffer(mTextSpanBuffer, formattedData, color, isBold);
+            Log.v(TAG,"onUartPacketText formatted: " + formattedData);
         }
     }
 

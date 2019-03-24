@@ -623,8 +623,8 @@ public class ScannerViewModel extends AndroidViewModel implements BleScanner.Ble
                             if (status == BluetoothGatt.GATT_SUCCESS) {
                                 // Discovery finished
                                 mBlePeripheralDiscoveredServices.setValue(blePeripheral);
-                                Intent intent2 = new Intent(context, ConfigureActivity.class);
-                                context.startActivity(intent2);
+                                //Intent intent2 = new Intent(context, ConfigureActivity.class);
+                                //context.startActivity(intent2);
 
                             } else {
                                 final String message = LocalizationManager.getInstance().getString(getApplication(), "peripheraldetails_errordiscoveringservices");

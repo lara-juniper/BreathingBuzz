@@ -90,6 +90,7 @@ public class UartServiceFragment extends UartBaseFragment {
 
     @Override
     protected void send(String message) {
+        Log.v(TAG,"Sending message: " + message);
         if (!(mUartData instanceof UartPeripheralModePacketManager)) {
             Log.e(TAG, "Error send with invalid uartData class");
             return;
