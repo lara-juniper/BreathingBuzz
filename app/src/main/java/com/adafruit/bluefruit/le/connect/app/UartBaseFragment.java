@@ -90,6 +90,7 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
     private TextView mReceivedBytesTextView;
     protected Spinner mSendPeripheralSpinner;
     private ProgressBar loadingBar;
+    private Button restartButton;
 
     // UI TextBuffer (refreshing the text buffer is managed with a timer because a lot of changes can arrive really fast and could stall the main thread)
     private Handler mUIRefreshTimerHandler = new Handler();
@@ -147,6 +148,8 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
         if (context != null) {
             mainTextView = view.findViewById(R.id.uartMainTextView);
             loadingBar = view.findViewById(R.id.loadingBar);
+            restartButton = view.findViewById(R.id.restartButton);
+            restartButton.setVisibility(View.INVISIBLE);
             mainTextView.setText("Click the button to configure OropharAngel!");
             //mBufferRecylerView = view.findViewById(R.id.bufferRecyclerView);
             DividerItemDecoration itemDecoration = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
@@ -189,6 +192,20 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
 
         mSendButton = view.findViewById(R.id.sendButton);
         mSendButton.setOnClickListener(view12 -> onClickSend());
+
+        restartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSendButton.setVisibility(View.VISIBLE);
+                mSendButton.setEnabled(true);
+                mainTextView.setTextColor(Color.WHITE);
+                vibrator.cancel();
+                mainTextView.setText("Click the button to configure OropharAngel!");
+                restartButton.setVisibility(View.INVISIBLE);
+                String newText = "restart";
+                send(newText);
+            }
+        });
 
         final boolean isInMultiUartMode = isInMultiUartMode();
         mSendPeripheralSpinner = view.findViewById(R.id.sendPeripheralSpinner);
@@ -543,6 +560,8 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
             mainTextView.setText("Breathing is normal. All is well!");
             mainTextView.setTextColor(Color.GREEN);
             loadingBar.setVisibility(View.INVISIBLE);
+            restartButton.setVisibility(View.VISIBLE);
+            mSendButton.setVisibility(View.INVISIBLE);
 
         }
     }
@@ -728,109 +747,6 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
 
     // endregion
 
-    // region Buffer Adapter
-/*
-    class TimestampItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-        // ViewHolder
-        class ItemViewHolder extends RecyclerView.ViewHolder {
-            ViewGroup mainViewGroup;
-            TextView timestampTextView;
-            TextView dataTextView;
-
-            ItemViewHolder(View view) {
-                super(view);
-
-                mainViewGroup = view.findViewById(R.id.mainViewGroup);
-                timestampTextView = view.findViewById(R.id.timestampTextView);
-                dataTextView = view.findViewById(R.id.dataTextView);
-            }
-        }
-
-        // Data
-        private Context mContext;
-        private boolean mIsEchoEnabled;
-        private boolean mShowDataInHexFormat;
-        private UartPacketManagerBase mUartData;
-        private List<UartPacket> mTableCachedDataBuffer;
-        private SimpleDateFormat mDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-
-        TimestampItemAdapter(@NonNull Context context) {
-            super();
-            mContext = context;
-        }
-
-        void setUartData(@Nullable UartPacketManagerBase uartData) {
-            mUartData = uartData;
-            notifyDataSetChanged();
-        }
-
-        int getCachedDataBufferSize() {
-            return mTableCachedDataBuffer != null ? mTableCachedDataBuffer.size() : 0;
-        }
-
-        void setEchoEnabled(boolean isEchoEnabled) {
-            mIsEchoEnabled = isEchoEnabled;
-            notifyDataSetChanged();
-        }
-
-        void setShowDataInHexFormat(boolean showDataInHexFormat) {
-            mShowDataInHexFormat = showDataInHexFormat;
-            notifyDataSetChanged();
-        }
-
-        @NonNull
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_uart_packetitem, parent, false);
-            return new TimestampItemAdapter.ItemViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-
-            UartPacket packet = mTableCachedDataBuffer.get(position);
-            final String currentDateTimeString = mDateFormat.format(new Date(packet.getTimestamp()));//DateFormat.getTimeInstance().format(new Date(packet.getTimestamp()));
-            final String modeString = mContext.getString(packet.getMode() == UartPacket.TRANSFERMODE_RX ? R.string.uart_timestamp_direction_rx : R.string.uart_timestamp_direction_tx);
-            final int color = colorForPacket(packet);
-            final boolean isBold = isFontBoldForPacket(packet);
-
-            itemViewHolder.timestampTextView.setText(String.format("%s %s", currentDateTimeString, modeString));
-
-            SpannableString text = stringFromPacket(packet, mShowDataInHexFormat, color, isBold);
-            itemViewHolder.dataTextView.setText(text);
-
-            itemViewHolder.mainViewGroup.setBackgroundColor(position % 2 == 0 ? Color.WHITE : 0xeeeeee);
-        }
-
-        @Override
-        public int getItemCount() {
-            if (mUartData == null) {
-                return 0;
-            }
-
-            if (mIsEchoEnabled) {
-                mTableCachedDataBuffer = mUartData.getPacketsCache();
-            } else {
-                if (mTableCachedDataBuffer == null) {
-                    mTableCachedDataBuffer = new ArrayList<>();
-                } else {
-                    mTableCachedDataBuffer.clear();
-                }
-
-                List<UartPacket> packets = mUartData.getPacketsCache();
-                for (int i = 0; i < packets.size(); i++) {
-                    UartPacket packet = packets.get(i);
-                    if (packet != null && packet.getMode() == UartPacket.TRANSFERMODE_RX) {     // packet != null because crash found in google logs
-                        mTableCachedDataBuffer.add(packet);
-                    }
-                }
-            }
-
-            return mTableCachedDataBuffer.size();
-        }
-    }
-*/
     // endregion
 }
