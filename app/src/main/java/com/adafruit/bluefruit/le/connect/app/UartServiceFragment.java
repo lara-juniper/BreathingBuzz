@@ -77,7 +77,7 @@ public class UartServiceFragment extends UartBaseFragment {
         }
 
         mUartData = new UartPeripheralModePacketManager(context, this, true, mMqttManager);
-        mBufferItemAdapter.setUartData(mUartData);
+        //mBufferItemAdapter.setUartData(mUartData);
         mUartPeripheralService = PeripheralModeManager.getInstance().getUartPeripheralService();
         mUartPeripheralService.uartEnable(data -> mUartData.onRxDataReceived(data, null, BluetoothGatt.GATT_SUCCESS));
 

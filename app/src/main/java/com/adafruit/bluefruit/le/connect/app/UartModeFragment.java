@@ -194,7 +194,7 @@ public class UartModeFragment extends UartBaseFragment {
             return;
         }
         mUartData = new UartPacketManager(context, this, true, mMqttManager);           // Note: mqttmanager should have been initialized previously
-        mBufferItemAdapter.setUartData(mUartData);
+        //mBufferItemAdapter.setUartData(mUartData);
 
         // Colors assigned to peripherals
         final int[] colors = UartStyle.defaultColors();

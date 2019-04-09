@@ -86,12 +86,13 @@
             android:text="Text here"/>
 
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/bufferRecyclerView"
+        <ProgressBar
+            android:id="@+id/loadingBar"
+            style="?android:attr/progressBarStyle"
+            android:visibility="invisible"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_weight="1"
-            android:visibility="invisible" />
+            android:layout_height="wrap_content" />
+
 
         <EditText
             android:id="@+id/bufferTextView"

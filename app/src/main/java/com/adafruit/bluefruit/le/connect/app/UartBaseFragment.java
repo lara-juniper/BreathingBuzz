@@ -39,6 +39,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -79,8 +80,8 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
     // UI
     private TextView mainTextView;
     private EditText mBufferTextView;
-    private RecyclerView mBufferRecylerView;
-    protected TimestampItemAdapter mBufferItemAdapter;
+    //private RecyclerView mBufferRecylerView;
+    //protected TimestampItemAdapter mBufferItemAdapter;
     private EditText mSendEditText;
     private Button mSendButton;
     private MenuItem mMqttMenuItem;
@@ -88,6 +89,7 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
     private TextView mSentBytesTextView;
     private TextView mReceivedBytesTextView;
     protected Spinner mSendPeripheralSpinner;
+    private ProgressBar loadingBar;
 
     // UI TextBuffer (refreshing the text buffer is managed with a timer because a lot of changes can arrive really fast and could stall the main thread)
     private Handler mUIRefreshTimerHandler = new Handler();
@@ -144,22 +146,23 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
         // Buffer recycler view
         if (context != null) {
             mainTextView = view.findViewById(R.id.uartMainTextView);
+            loadingBar = view.findViewById(R.id.loadingBar);
             mainTextView.setText("Click the button to configure OropharAngel!");
-            mBufferRecylerView = view.findViewById(R.id.bufferRecyclerView);
+            //mBufferRecylerView = view.findViewById(R.id.bufferRecyclerView);
             DividerItemDecoration itemDecoration = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
             Drawable lineSeparatorDrawable = ContextCompat.getDrawable(context, R.drawable.simpledivideritemdecoration);
             assert lineSeparatorDrawable != null;
             itemDecoration.setDrawable(lineSeparatorDrawable);
-            mBufferRecylerView.addItemDecoration(itemDecoration);
+            //mBufferRecylerView.addItemDecoration(itemDecoration);
 
             LinearLayoutManager layoutManager = new LinearLayoutManager(context);
             //layoutManager.setStackFromEnd(true);        // Scroll to bottom when adding elements
-            mBufferRecylerView.setLayoutManager(layoutManager);
+            //mBufferRecylerView.setLayoutManager(layoutManager);
 
-            ((SimpleItemAnimator) mBufferRecylerView.getItemAnimator()).setSupportsChangeAnimations(false);         // Disable update animation
-            mBufferItemAdapter = new TimestampItemAdapter(context);            // Adapter
+            //((SimpleItemAnimator) mBufferRecylerView.getItemAnimator()).setSupportsChangeAnimations(false);         // Disable update animation
+            //mBufferItemAdapter = new TimestampItemAdapter(context);            // Adapter
 
-            mBufferRecylerView.setAdapter(mBufferItemAdapter);
+            //mBufferRecylerView.setAdapter(mBufferItemAdapter);
         }
 
         // Buffer
@@ -227,13 +230,13 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
 
     private void setShowDataInHexFormat(boolean showDataInHexFormat) {
         mShowDataInHexFormat = showDataInHexFormat;
-        mBufferItemAdapter.setShowDataInHexFormat(showDataInHexFormat);
+        //mBufferItemAdapter.setShowDataInHexFormat(showDataInHexFormat);
 
     }
 
     private void setEchoEnabled(boolean isEchoEnabled) {
         mIsEchoEnabled = isEchoEnabled;
-        mBufferItemAdapter.setEchoEnabled(isEchoEnabled);
+        //mBufferItemAdapter.setEchoEnabled(isEchoEnabled);
     }
 
     abstract protected boolean isInMultiUartMode();
@@ -494,8 +497,10 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
             newText += getEolCharacters();
         }
         */
-        mainTextView.setText("Breathing is normal. All is well!");
-        mainTextView.setTextColor(Color.GREEN);
+        mainTextView.setText("Configuration in progress. Make sure device is inserted and patient is breathing.");
+        mainTextView.setTextColor(Color.DKGRAY);
+        loadingBar.setVisibility(View.VISIBLE);
+        loadingBar.animate();
         String newText = "configure";
         mSendButton.setEnabled(false);
         send(newText);
@@ -534,6 +539,11 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
             mainTextView.setTextColor(Color.GREEN);
             vibrator.cancel();
 
+        } else if (text.equalsIgnoreCase("doneInit")) {
+            mainTextView.setText("Breathing is normal. All is well!");
+            mainTextView.setTextColor(Color.GREEN);
+            loadingBar.setVisibility(View.INVISIBLE);
+
         }
     }
 
@@ -551,7 +561,7 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
     private void setDisplayFormatToTimestamp(boolean enabled) {
         mIsTimestampDisplayMode = enabled;
         mBufferTextView.setVisibility(enabled ? View.GONE : View.VISIBLE);
-        mBufferRecylerView.setVisibility(enabled ? View.VISIBLE : View.GONE);
+        //mBufferRecylerView.setVisibility(enabled ? View.VISIBLE : View.GONE);
     }
 
     abstract protected int colorForPacket(UartPacket packet);
@@ -575,15 +585,15 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
 
             if (mIsTimestampDisplayMode) {
 
-                mBufferItemAdapter.notifyDataSetChanged();
-                final int bufferSize = mBufferItemAdapter.getCachedDataBufferSize();
-                mBufferRecylerView.smoothScrollToPosition(Math.max(bufferSize - 1, 0));
+                //mBufferItemAdapter.notifyDataSetChanged();
+                //final int bufferSize = mBufferItemAdapter.getCachedDataBufferSize();
+                //mBufferRecylerView.smoothScrollToPosition(Math.max(bufferSize - 1, 0));
 
             } else {
                 if (packetsCacheSize > maxPacketsToPaintAsText) {
                     mPacketsCacheLastSize = packetsCacheSize - maxPacketsToPaintAsText;
                     mTextSpanBuffer.clear();
-                    addTextToSpanBuffer(mTextSpanBuffer, getString(R.string.uart_text_dataomitted) + "\n", kInfoColor, false);
+                    //addTextToSpanBuffer(mTextSpanBuffer, getString(R.string.uart_text_dataomitted) + "\n", kInfoColor, false);
                 }
 
                 // Log.d(TAG, "update packets: "+(bufferSize-mPacketsCacheLastSize));
@@ -719,7 +729,7 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
     // endregion
 
     // region Buffer Adapter
-
+/*
     class TimestampItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         // ViewHolder
@@ -821,6 +831,6 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
             return mTableCachedDataBuffer.size();
         }
     }
-
+*/
     // endregion
 }
