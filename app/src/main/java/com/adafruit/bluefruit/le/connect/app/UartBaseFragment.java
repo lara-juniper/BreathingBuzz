@@ -150,7 +150,7 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
             loadingBar = view.findViewById(R.id.loadingBar);
             restartButton = view.findViewById(R.id.restartButton);
             restartButton.setVisibility(View.INVISIBLE);
-            mainTextView.setText("Click the button to configure OropharAngel!");
+            mainTextView.setText("Click the button to configure Breathing Buzz!");
             //mBufferRecylerView = view.findViewById(R.id.bufferRecyclerView);
             DividerItemDecoration itemDecoration = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
             Drawable lineSeparatorDrawable = ContextCompat.getDrawable(context, R.drawable.simpledivideritemdecoration);
@@ -200,7 +200,7 @@ public abstract class UartBaseFragment extends ConnectedPeripheralFragment imple
                 mSendButton.setEnabled(true);
                 mainTextView.setTextColor(Color.WHITE);
                 vibrator.cancel();
-                mainTextView.setText("Click the button to configure OropharAngel!");
+                mainTextView.setText("Click the button to configure Breathing Buzz!");
                 restartButton.setVisibility(View.INVISIBLE);
                 String newText = "restart";
                 send(newText);
